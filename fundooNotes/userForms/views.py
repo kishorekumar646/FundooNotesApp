@@ -2,6 +2,8 @@ from django.shortcuts import render,HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User,auth
 from django.contrib.sites.shortcuts import get_current_site
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.core.mail import EmailMessage
@@ -160,26 +162,24 @@ class resetPasswordForm(GenericAPIView):
         else:
             return Response("First you have to login")
 
-class createNoteList(mixins.ListModelMixin,GenericAPIView):
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+class createNoteList(GenericAPIView):
+    # queryset = Notes.objects.all()
+    serializer_class = CreateNoteSerializer
+    
+    # @method_decorator(login_required)
+    # def get(self,request):
+    #     queryset = Notes.objects.all()
+    #     seri = CreateNoteSerializer(queryset,many=True)
+    #     return Response(seri.data)
 
-    def get(self,request):
-        return self.list(request)
+    @login_required
+    def post(self,request):
+        title = request.data['title']
+        takeNote = request.data['takeNote']
+        user_id = self.request.user
+        print(user_id)
 
-class CreateNoteForm(mixins.RetrieveModelMixin,GenericAPIView):
-    serializer_class = UserSerializer
-    queryset = User.objects.all()
-
-    def get(self,request):
-        return self.retrieve(request)
-    # def post(self,request):
-    #     title = request.data['title']
-    #     takeNote = request.data['takeNote']
-
-    #     print("user : {} , title : {} , takeNote : {}".format(user,title,takeNote))
-
-    #     return Response("Note created")
+        return Response(user_id)
 
 def activate(request,surl):
     try:
