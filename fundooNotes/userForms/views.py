@@ -196,6 +196,17 @@ class UpdateNoteList(GenericAPIView):
 
         return Response('Note updated')
 
+    def delete(self,request, pk):
+        try:
+            note = Notes.objects.get(id=pk)
+            print(note)
+            note.delete()
+
+            return Response("Note deleted")
+
+        except Notes.DoesNotExist:
+            return Response("Not found")
+
 def activate(request,surl):
     try:
         token_object = short.objects.get(surl=surl)
