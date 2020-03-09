@@ -31,3 +31,9 @@ class CreateNoteSerializer(serializers.ModelSerializer):
         model = Notes
         fields = ['title','takeNote']
         # read_only_fileds = ['user']
+
+class DisplayNoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Notes
+        fields = '__all__'
+        read_only_fileds = ['user']

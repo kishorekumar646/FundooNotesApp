@@ -1,6 +1,7 @@
 from django.shortcuts import render,HttpResponse
 from django.template.loader import render_to_string
 from django.contrib.auth.models import User,auth
+from userForms.models import Notes
 from django.contrib.sites.shortcuts import get_current_site
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -9,7 +10,8 @@ from django.db import IntegrityError
 from django.core.mail import EmailMessage
 from django_short_url.views import get_surl
 from django_short_url.models import ShortURL as short
-from userForms.serializer import UserSerializer,RegisterationFormSerializer,LoginFormFormSerializer,ForgotPasswordFormSerializer,ResetPasswordFormSerializer,CreateNoteSerializer
+from userForms.serializer import UserSerializer,RegisterationFormSerializer,LoginFormFormSerializer,ForgotPasswordFormSerializer
+from userForms.serializer import DisplayNoteSerializer,ResetPasswordFormSerializer,CreateNoteSerializer
 from userForms.tokens import token_activation
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -163,23 +165,20 @@ class resetPasswordForm(GenericAPIView):
             return Response("First you have to login")
 
 class createNoteList(GenericAPIView):
-    # queryset = Notes.objects.all()
-    serializer_class = CreateNoteSerializer
+    serializer_class = CreateNoteSerializer    
     
-    # @method_decorator(login_required)
-    # def get(self,request):
-    #     queryset = Notes.objects.all()
-    #     seri = CreateNoteSerializer(queryset,many=True)
-    #     return Response(seri.data)
+    def get(self,request):
+        queryset = Notes.objects.filter(user=self.request.user.id)
+        seri = DisplayNoteSerializer(queryset,many=True)
+        return Response(seri.data)
 
-    @login_required
     def post(self,request):
         title = request.data['title']
         takeNote = request.data['takeNote']
-        user_id = self.request.user
-        print(user_id)
-
-        return Response(user_id)
+        user_id = User.objects.get(id=self.request.user.id)
+        note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote)
+        note.save()
+        return Response("Note Created")
 
 def activate(request,surl):
     try:

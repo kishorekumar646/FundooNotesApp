@@ -23,7 +23,7 @@ from rest_framework.documentation import include_docs_urls
 urlpatterns = [
     path('admin/', admin.site.urls),
     # path('docs/',schema_view),
-    path('',include('rest_framework.urls')),
+    # path('',include('rest_framework.urls')),
     path('',include_docs_urls(title='Fundoo Notes')),
     path('',include('userForms.urls'))
 ]
