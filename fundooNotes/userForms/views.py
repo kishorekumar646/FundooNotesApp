@@ -180,6 +180,22 @@ class createNoteList(GenericAPIView):
         note.save()
         return Response("Note Created")
 
+class UpdateNoteList(GenericAPIView):
+
+    serializer_class = CreateNoteSerializer
+    queryset = Notes.objects.all()
+
+    def put(self,request,pk):
+        title = request.data['title']
+        takeNote = request.data['takeNote']
+        print(title)
+        print(takeNote)
+        user_id = User.objects.get(id=self.request.user.id)
+        print(user_id)
+        Notes.objects.filter(id=pk).update(title=title)
+
+        return Response('Note updated')
+
 def activate(request,surl):
     try:
         token_object = short.objects.get(surl=surl)
