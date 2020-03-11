@@ -164,6 +164,7 @@ class resetPasswordForm(GenericAPIView):
         else:
             return Response("First you have to login")
 
+@method_decorator(login_required, name="dispatch")
 class createNoteList(GenericAPIView):
     serializer_class = CreateNoteSerializer    
     
@@ -179,7 +180,8 @@ class createNoteList(GenericAPIView):
         note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote)
         note.save()
         return Response("Note Created")
-
+        
+@method_decorator(login_required, name="dispatch")
 class UpdateNoteList(GenericAPIView):
 
     serializer_class = CreateNoteSerializer
