@@ -198,7 +198,7 @@ class createNoteList(GenericAPIView):
         note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote,archive=archive,pin=pin)
         note.save()
         return Response("Note Created")
-        
+
 @method_decorator(login_required, name="dispatch")
 class UpdateNoteList(GenericAPIView):
 
@@ -213,26 +213,34 @@ class UpdateNoteList(GenericAPIView):
         return Response(seri.data)
 
     def put(self,request,pk):
-        queryset = Notes.objects.get(id=pk,bin=False)
+        user = User.objects.get(id=self.request.user.id)
+        note = Notes.objects.get(id=pk,user_id=user)
+        if note.bin == True:
+            return Response("You con't edit this note")
         title = request.data['title']
         takeNote = request.data['takeNote']
-        archive = request.data['archive']
-        pin = request.data['pin']
         if 'archive' in request.POST:
             archive = request.POST['archive']
             if archive == 'true':
                 archive = True
         else:
             archive = False
-
+        print(archive)
         if 'pin' in request.POST:
             pin = request.POST['pin']
             if pin == 'true':
                 pin = True
         else:
             pin = False
-
-        note = Notes.objects.filter(id=pk).update(title=title,takeNote=takeNote,archive=archive,pin=pin)
+        print(pin)
+        if 'bin' in request.POST:
+            bin = request.POST['bin']
+            if bin == 'true':
+                bin = True
+        else:
+            bin = False
+        
+        note = Notes.objects.filter(id=pk).update(title=title,takeNote=takeNote,archive=archive,pin=pin,bin=bin)
         
         return Response('Note updated')
 
