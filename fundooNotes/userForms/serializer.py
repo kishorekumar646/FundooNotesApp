@@ -29,7 +29,7 @@ class ResetPasswordFormSerializer(serializers.ModelSerializer):
 class CreateNoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = Notes
-        fields = ['title','takeNote','archive']
+        fields = ['title','takeNote','archive','pin']
         # read_only_fileds = ['user']
 
 class DisplayNoteSerializer(serializers.ModelSerializer):

@@ -180,6 +180,7 @@ class createNoteList(GenericAPIView):
         title = request.data['title']
         takeNote = request.data['takeNote']
         archive = request.data['archive']
+        pin = request.POST['pin']
         if 'archive' in request.POST:
             archive = request.POST['archive']
             if archive == 'true':
@@ -187,9 +188,14 @@ class createNoteList(GenericAPIView):
         else:
             archive = False
         print(archive)
-
+        if 'pin' in request.POST:
+            pin = request.POST['pin']
+            if pin == 'true':
+                pin = True
+        else:
+            pin = False
         user_id = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote,archive=archive)
+        note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote,archive=archive,pin=pin)
 
         return Response("Note Created")
 
@@ -211,13 +217,22 @@ class UpdateNoteList(GenericAPIView):
         title = request.data['title']
         takeNote = request.data['takeNote']
         archive = request.data['archive']
+        pin = request.data['pin']
         if 'archive' in request.POST:
             archive = request.POST['archive']
             if archive == 'true':
                 archive = True
         else:
             archive = False
-        note = Notes.objects.filter(id=pk).update(title=title,takeNote=takeNote,archive=archive)
+
+        if 'pin' in request.POST:
+            pin = request.POST['pin']
+            if pin == 'true':
+                pin = True
+        else:
+            pin = False
+
+        note = Notes.objects.filter(id=pk).update(title=title,takeNote=takeNote,archive=archive,pin=pin)
         
         return Response('Note updated')
 
