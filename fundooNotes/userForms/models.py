@@ -11,4 +11,5 @@ class Notes(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=20)
     takeNote = models.TextField()
+    archive = models.BooleanField(default=False)
     
