@@ -89,9 +89,11 @@ class loginForm(GenericAPIView):
         user = auth.authenticate(username=username, password=password)
 
         if user is not None:
-            auth.login(request, user)
-            return Response("Login successfully")
-
+            if user.is_active:
+                auth.login(request, user)
+                return Response("Login successfully")
+            else:
+                return Response("Please activate your account")
         else:
             return Response("Log in failed")
 
