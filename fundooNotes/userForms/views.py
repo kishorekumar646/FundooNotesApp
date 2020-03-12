@@ -179,8 +179,17 @@ class createNoteList(GenericAPIView):
     def post(self,request):
         title = request.data['title']
         takeNote = request.data['takeNote']
+        archive = request.data['archive']
+        if 'archive' in request.POST:
+            archive = request.POST['archive']
+            if archive == 'true':
+                archive = True
+        else:
+            archive = False
+        print(archive)
+
         user_id = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote,archive=archive,pin=pin,bin=False)
+        note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote,archive=archive)
 
         return Response("Note Created")
 
@@ -201,7 +210,14 @@ class UpdateNoteList(GenericAPIView):
         queryset = Notes.objects.get(id=pk,bin=False)
         title = request.data['title']
         takeNote = request.data['takeNote']
-        note = Notes.objects.filter(id=pk).update(title=title,takeNote=takeNote,archive=archive,pin=pin,bin=bin)
+        archive = request.data['archive']
+        if 'archive' in request.POST:
+            archive = request.POST['archive']
+            if archive == 'true':
+                archive = True
+        else:
+            archive = False
+        note = Notes.objects.filter(id=pk).update(title=title,takeNote=takeNote,archive=archive)
         
         return Response('Note updated')
 
