@@ -13,3 +13,4 @@ class Notes(models.Model):
     takeNote = models.TextField()
     archive = models.BooleanField(default=False)
     pin = models.BooleanField(default=False)
+    bin = models.BooleanField(default=False)
