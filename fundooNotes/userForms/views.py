@@ -259,6 +259,18 @@ class ArchiveNoteList(GenericAPIView):
         seri = DisplayNoteSerializer(note,many=True)
         return Response(seri.data)
 
+@method_decorator(login_required, name="dispatch")
+class PinNoteList(GenericAPIView):
+
+    serializer_class = DisplayNoteSerializer
+    queryset = Notes.objects.all()
+
+    def get(self,request):
+        user = User.objects.get(id=self.request.user.id)
+        note = Notes.objects.filter(pin = True,user_id=user.id)
+        seri = DisplayNoteSerializer(note,many=True)
+        return Response(seri.data)
+        
 def activate(request,surl):
     try:
         token_object = short.objects.get(surl=surl)
