@@ -11,7 +11,7 @@ from django.core.mail import EmailMessage
 from django_short_url.views import get_surl
 from django_short_url.models import ShortURL as short
 from userForms.serializer import UserSerializer,RegisterationFormSerializer,LoginFormFormSerializer,ForgotPasswordFormSerializer
-from userForms.serializer import DisplayNoteSerializer,ResetPasswordFormSerializer,CreateNoteSerializer
+from userForms.serializer import DisplayNoteSerializer,ResetPasswordFormSerializer,CreateNoteSerializer,RestoreNoteSerializer
 from userForms.tokens import token_activation
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
@@ -271,6 +271,31 @@ class PinNoteList(GenericAPIView):
         seri = DisplayNoteSerializer(note,many=True)
         return Response(seri.data)
         
+@method_decorator(login_required, name="dispatch")
+class BinNoteList(GenericAPIView):
+
+    serializer_class = RestoreNoteSerializer
+    # queryset = Notes.objects.all()
+
+    def get(self,request,pk):
+        user = User.objects.get(id=self.request.user.id)
+        note = Notes.objects.get(id = pk,user_id=user)
+        seri = DisplayNoteSerializer(note)
+        return Response(seri.data)
+
+    def put(self,request,pk):
+        user = User.objects.get(id=self.request.user.id)
+        note = Notes.objects.get(id=pk,user_id=user)
+        if 'bin' in request.POST:
+            bin = request.POST['bin']
+            if bin == 'True' or bin == 'true':
+                return Response("Alredy your are in bin or you can't add to bin")
+        else:
+            bin = False
+            note = Notes.objects.filter(id=pk).update(bin=bin)
+        
+            return Response('Restore Note')
+
 def activate(request,surl):
     try:
         token_object = short.objects.get(surl=surl)

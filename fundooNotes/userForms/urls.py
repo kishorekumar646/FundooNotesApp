@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import registerForm,loginForm,forgotPasswordForm,resetPasswordForm,createNoteList,activate,logout
-from .views import UpdateNoteList,ArchiveNoteList,PinNoteList
+from .views import UpdateNoteList,ArchiveNoteList,PinNoteList,BinNoteList
 
 urlpatterns = [
     path('register/',registerForm.as_view(),name="register"),
@@ -12,5 +12,6 @@ urlpatterns = [
     path('updateNoteList/<int:pk>',UpdateNoteList.as_view(),name='updateNoteList'),
     path('archiveNoteList/',ArchiveNoteList.as_view(),name='archiveNoteList'),
     path('pinNoteList/',PinNoteList.as_view(),name='pinNoteList'),
+    path('binNoteList/<int:pk>',BinNoteList.as_view(),name='binNoteList'),
     path('logout',logout)
 ]
