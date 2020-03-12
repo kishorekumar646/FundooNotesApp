@@ -38,6 +38,7 @@ class registerForm(GenericAPIView):
                     validate_email(email)
                     user = User.objects.create_user(
                         username=userName, email=email, password=password)
+                    user.is_active = False
                     user.save()
 
                     current_site = get_current_site(request)
@@ -166,36 +167,42 @@ class resetPasswordForm(GenericAPIView):
 
 @method_decorator(login_required, name="dispatch")
 class createNoteList(GenericAPIView):
-    serializer_class = CreateNoteSerializer    
+    queryset = Notes.objects.all()
+    serializer_class = CreateNoteSerializer
     
     def get(self,request):
-        queryset = Notes.objects.filter(user=self.request.user.id)
-        seri = DisplayNoteSerializer(queryset,many=True)
+        user = User.objects.get(id=self.request.user.id)
+        queryset = Notes.objects.filter(user_id=user.id)
+        seri = CreateNoteSerializer(queryset,many=True)
         return Response(seri.data)
 
     def post(self,request):
         title = request.data['title']
         takeNote = request.data['takeNote']
         user_id = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote)
-        note.save()
+        note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote,archive=archive,pin=pin,bin=False)
+
         return Response("Note Created")
-        
+
 @method_decorator(login_required, name="dispatch")
 class UpdateNoteList(GenericAPIView):
 
-    serializer_class = CreateNoteSerializer
-    queryset = Notes.objects.all()
+    serializer_class = DisplayNoteSerializer
+    # queryset = Notes.objects.all()
+
+    def get(self,request,pk):
+
+        user = User.objects.get(id=self.request.user.id)
+        note = Notes.objects.get(id=pk,user_id=user.id)
+        seri = DisplayNoteSerializer(note)
+        return Response(seri.data)
 
     def put(self,request,pk):
+        queryset = Notes.objects.get(id=pk,bin=False)
         title = request.data['title']
         takeNote = request.data['takeNote']
-        print(title)
-        print(takeNote)
-        user_id = User.objects.get(id=self.request.user.id)
-        print(user_id)
-        Notes.objects.filter(id=pk).update(title=title)
-
+        note = Notes.objects.filter(id=pk).update(title=title,takeNote=takeNote,archive=archive,pin=pin,bin=bin)
+        
         return Response('Note updated')
 
     def delete(self,request, pk):
@@ -207,7 +214,8 @@ class UpdateNoteList(GenericAPIView):
             return Response("Note deleted")
 
         except Notes.DoesNotExist:
-            return Response("Not found")
+            return Response("Not found") 
+
 
 def activate(request,surl):
     try:
@@ -219,7 +227,7 @@ def activate(request,surl):
         user = User.objects.get(username=user_name)
 
         if user is not None:
-            # user.is_active = True
+            user.is_active = True
             user.save()
             return HttpResponse("successfully activate your account......")
 
