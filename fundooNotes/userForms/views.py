@@ -232,6 +232,17 @@ class UpdateNoteList(GenericAPIView):
         except Notes.DoesNotExist:
             return Response("Not found") 
 
+@method_decorator(login_required, name="dispatch")
+class ArchiveNoteList(GenericAPIView):
+
+    serializer_class = DisplayNoteSerializer
+    queryset = Notes.objects.all()
+
+    def get(self,request):
+        user = User.objects.get(id=self.request.user.id)
+        note = Notes.objects.filter(archive = True,user_id=user.id)
+        seri = DisplayNoteSerializer(note,many=True)
+        return Response(seri.data)
 
 def activate(request,surl):
     try:
