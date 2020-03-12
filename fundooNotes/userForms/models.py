@@ -12,4 +12,4 @@ class Notes(models.Model):
     title = models.CharField(max_length=20)
     takeNote = models.TextField()
     archive = models.BooleanField(default=False)
-    
+    pin = models.BooleanField(default=False)
