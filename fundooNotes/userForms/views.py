@@ -179,8 +179,6 @@ class createNoteList(GenericAPIView):
     def post(self,request):
         title = request.data['title']
         takeNote = request.data['takeNote']
-        archive = request.data['archive']
-        pin = request.POST['pin']
         if 'archive' in request.POST:
             archive = request.POST['archive']
             if archive == 'true':
@@ -194,11 +192,13 @@ class createNoteList(GenericAPIView):
                 pin = True
         else:
             pin = False
+        print(pin)
+        print(self.request.user.id)
         user_id = User.objects.get(id=self.request.user.id)
         note = Notes.objects.create(user=user_id,title=title,takeNote=takeNote,archive=archive,pin=pin)
-
+        note.save()
         return Response("Note Created")
-
+        
 @method_decorator(login_required, name="dispatch")
 class UpdateNoteList(GenericAPIView):
 
