@@ -54,6 +54,11 @@ EMAIL_HOST_USER = 'kishorekumar131646@gmail.com'
 EMAIL_HOST_PASSWORD = 'Kishorekumar@646'
 EMAIL_PORT = '587'
 
+LOGIN_URL = '/login/'
+
+
+BASE_URL = 'http://127.0.0.1:8000'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
