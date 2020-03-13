@@ -31,3 +31,11 @@ class test_TestUrls(unittest.TestCase):
         response = client.post(path=url, data=userData, format='json')
 
         self.assertEqual(response.status_code, 200)
+
+    def test_RegistarationPasswordMissMatchOnSubmit_ThenReturn_HTTP_400_BAD_REQUEST(self):
+        url = BASE_URL + reverse("register")
+        userData = {'username': 'raki', 'email': 'raki@gmail.com',
+                    'password': '123', 'confirm_password': '1234'}
+        response = client.post(path=url, data=userData, format='json')
+
+        self.assertEqual(response.status_code, 400)

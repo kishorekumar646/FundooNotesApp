@@ -72,10 +72,10 @@ class registerForm(GenericAPIView):
                     return Response('Please confirm your email address to complete the registration',status=status.HTTP_200_OK)
 
                 except ValidationError:
-                    return Response("Email not found")
+                    return Response("Email not found",status=status.HTTP_404_NOT_FOUND)
 
             else:
-                return Response("Password Missmatch")
+                return Response("Password Missmatch",status=status.HTTP_400_BAD_REQUEST)
         
         except IntegrityError:
             return Response("User Already exist")
