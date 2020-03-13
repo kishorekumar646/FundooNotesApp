@@ -92,7 +92,7 @@ class loginForm(GenericAPIView):
         if user is not None:
             if user.is_active:
                 auth.login(request, user)
-                return Response("Login successfully")
+                return Response("Login successfully",status=status.HTTP_202_ACCEPTED)
             else:
                 return Response("Please activate your account")
         else:

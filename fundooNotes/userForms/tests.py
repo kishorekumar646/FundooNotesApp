@@ -39,3 +39,10 @@ class test_TestUrls(unittest.TestCase):
         response = client.post(path=url, data=userData, format='json')
 
         self.assertEqual(response.status_code, 400)
+    
+    def test_LoginOnSubmit_ThenReturn_HTTP_202_ACCEPTED(self):
+        url = BASE_URL + reverse("login")
+        userData = {'username': 'raki', 'password': '123'}
+        response = client.post(path=url, data=userData, format='json')
+
+        self.assertEqual(response.status_code, 202)
