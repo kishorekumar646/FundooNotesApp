@@ -15,6 +15,7 @@ from userForms.serializer import DisplayNoteSerializer,ResetPasswordFormSerializ
 from userForms.tokens import token_activation
 from rest_framework.generics import GenericAPIView
 from rest_framework.response import Response
+from rest_framework import status
 from rest_framework import mixins
 from validate_email import validate_email
 from fundooNotes.settings import SECRET_KEY
@@ -32,7 +33,7 @@ class registerForm(GenericAPIView):
             confirm_password = request.data['confirm_password']
 
             if userName == "" or email == "" or password == "":
-                return Response("You can not put empty fields")
+                return Response("You can not put empty fields",status=status.HTTP_406_NOT_ACCEPTABLE)
             if password == confirm_password:
                 try:
                     validate_email(email)
@@ -167,7 +168,7 @@ class resetPasswordForm(GenericAPIView):
         else:
             return Response("First you have to login")
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
 class createNoteList(GenericAPIView):
     queryset = Notes.objects.all()
     serializer_class = CreateNoteSerializer
@@ -201,7 +202,7 @@ class createNoteList(GenericAPIView):
         note.save()
         return Response("Note Created")
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
 class UpdateNoteList(GenericAPIView):
 
     serializer_class = DisplayNoteSerializer
@@ -257,7 +258,7 @@ class UpdateNoteList(GenericAPIView):
         except Notes.DoesNotExist:
             return Response("Not found") 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
 class ArchiveNoteList(GenericAPIView):
 
     serializer_class = DisplayNoteSerializer
@@ -269,7 +270,7 @@ class ArchiveNoteList(GenericAPIView):
         seri = DisplayNoteSerializer(note,many=True)
         return Response(seri.data)
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
 class PinNoteList(GenericAPIView):
 
     serializer_class = DisplayNoteSerializer
@@ -281,7 +282,7 @@ class PinNoteList(GenericAPIView):
         seri = DisplayNoteSerializer(note,many=True)
         return Response(seri.data)
         
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
 class BinNoteList(GenericAPIView):
 
     serializer_class = RestoreNoteSerializer
