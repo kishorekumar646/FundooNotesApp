@@ -69,7 +69,7 @@ class registerForm(GenericAPIView):
                     email = EmailMessage(mail_subject, msg, to=[recipients])
                     email.send()
                     print('confirmation mail sent')
-                    return Response('Please confirm your email address to complete the registration')
+                    return Response('Please confirm your email address to complete the registration',status=status.HTTP_200_OK)
 
                 except ValidationError:
                     return Response("Email not found")
