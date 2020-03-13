@@ -96,7 +96,7 @@ class loginForm(GenericAPIView):
             else:
                 return Response("Please activate your account")
         else:
-            return Response("Log in failed")
+            return Response("Log in failed",status=status.HTTP_406_NOT_ACCEPTABLE)
 
 class forgotPasswordForm(GenericAPIView):
     serializer_class = ForgotPasswordFormSerializer

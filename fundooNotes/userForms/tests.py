@@ -46,3 +46,10 @@ class test_TestUrls(unittest.TestCase):
         response = client.post(path=url, data=userData, format='json')
 
         self.assertEqual(response.status_code, 202)
+
+    def test_LoginOnSubmitWithWrongPassword_ThenReturn_HTTP_406_NOT_ACCEPTABLE(self):
+        url = BASE_URL + reverse("login")
+        userData = {'username': 'raki', 'password': '1234'}
+        response = client.post(path=url, data=userData, format='json')
+
+        self.assertEqual(response.status_code, 406)
