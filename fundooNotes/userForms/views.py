@@ -233,17 +233,15 @@ class UpdateNoteList(GenericAPIView):
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
 
 
-@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
+@method_decorator(login_required, name="dispatch")
 class ArchiveNoteList(GenericAPIView):
 
-    serializer_class = DisplayNoteSerializer
     queryset = Notes.objects.all()
 
     def get(self, request):
-        user = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.filter(archive=True, user_id=user.id)
+        note = Notes.objects.filter(archive=True, user_id=self.request.user.id)
         seri = DisplayNoteSerializer(note, many=True)
-        return Response(seri.data)
+        return Response(seri.data, status=status.HTTP_200_OK)
 
 
 @method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
