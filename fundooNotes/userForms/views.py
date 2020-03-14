@@ -176,6 +176,7 @@ class resetPasswordForm(GenericAPIView):
 
 @method_decorator(login_required(login_url='/login/'), name="dispatch")
 class createNoteList(GenericAPIView):
+
     queryset = Notes.objects.all()
     serializer_class = CreateNoteSerializer
 
@@ -193,51 +194,32 @@ class createNoteList(GenericAPIView):
         return Response("Note not Created", status=status.HTTP_406_NOT_ACCEPTABLE)
 
 
-@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
+@method_decorator(login_required(login_url='/login/'), name="dispatch")
 class UpdateNoteList(GenericAPIView):
 
+    queryset = Notes.objects.all()
     serializer_class = DisplayNoteSerializer
-    # queryset = Notes.objects.all()
 
     def get(self, request, pk):
+        try:
+            note = Notes.objects.get(id=pk, user_id=self.request.user.id)
+            seri = DisplayNoteSerializer(note)
+            return Response(seri.data)
 
-        user = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.get(id=pk, user_id=user.id)
-        seri = DisplayNoteSerializer(note)
-        return Response(seri.data)
+        except Notes.DoesNotExist:
+            return Response("this note does not exit", status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk):
-        user = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.get(id=pk, user_id=user)
-        if note.bin == True:
-            return Response("You con't edit this note")
-        title = request.data['title']
-        takeNote = request.data['takeNote']
-        if 'archive' in request.POST:
-            archive = request.POST['archive']
-            if archive == 'true':
-                archive = True
-        else:
-            archive = False
-        print(archive)
-        if 'pin' in request.POST:
-            pin = request.POST['pin']
-            if pin == 'true':
-                pin = True
-        else:
-            pin = False
-        print(pin)
-        if 'bin' in request.POST:
-            bin = request.POST['bin']
-            if bin == 'true':
-                bin = True
-        else:
-            bin = False
+        try:
+            note = Notes.objects.get(id=pk, user_id=self.request.user.id)
+            serializer = DisplayNoteSerializer(note, data=request.data)
 
-        note = Notes.objects.filter(id=pk).update(
-            title=title, takeNote=takeNote, archive=archive, pin=pin, bin=bin)
+            if serializer.is_valid():
+                serializer.save()
+                return Response('Note updated', status=status.HTTP_202_ACCEPTED)
 
-        return Response('Note updated')
+        except Notes.DoesNotExist:
+            return Response("this note does not exit", status=status.HTTP_404_NOT_FOUND)
 
     def delete(self, request, pk):
         try:
@@ -245,10 +227,10 @@ class UpdateNoteList(GenericAPIView):
             print(note)
             note.delete()
 
-            return Response("Note deleted")
+            return Response("Note deleted", status=status.HTTP_202_ACCEPTED)
 
         except Notes.DoesNotExist:
-            return Response("Not found")
+            return Response("Not found", status=status.HTTP_404_NOT_FOUND)
 
 
 @method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
