@@ -266,30 +266,33 @@ class TrashNoteList(GenericAPIView):
         return Response(seri.data, status=status.HTTP_200_OK)
 
 
-@method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
-class BinNoteList(GenericAPIView):
+@method_decorator(login_required, name="dispatch")
+class RestoreNoteList(GenericAPIView):
 
     serializer_class = RestoreNoteSerializer
-    # queryset = Notes.objects.all()
+    queryset = Notes.objects.all()
 
     def get(self, request, pk):
-        user = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.get(id=pk, user_id=user)
-        seri = DisplayNoteSerializer(note)
-        return Response(seri.data)
+        try:
+            note = Notes.objects.get(
+                id=pk, bin=True, user_id=self.request.user.id)
+            seri = DisplayNoteSerializer(note)
+            return Response(seri.data, status=status.HTTP_200_OK)
+
+        except Notes.DoesNotExist:
+            return Response("this note does not exit", status=status.HTTP_404_NOT_FOUND)
 
     def put(self, request, pk):
-        user = User.objects.get(id=self.request.user.id)
-        note = Notes.objects.get(id=pk, user_id=user)
-        if 'bin' in request.POST:
-            bin = request.POST['bin']
-            if bin == 'True' or bin == 'true':
-                return Response("Alredy your are in bin or you can't add to bin")
-        else:
-            bin = False
-            note = Notes.objects.filter(id=pk).update(bin=bin)
+        try:
+            note = Notes.objects.get(
+                id=pk, bin=True, user_id=self.request.user.id)
+            serializer = RestoreNoteSerializer(note, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response('Restore from trash', status=status.HTTP_202_ACCEPTED)
 
-            return Response('Restore Note')
+        except Notes.DoesNotExist:
+            return Response("this note not found in trash", status=status.HTTP_404_NOT_FOUND)
 
 
 def activate(request, surl):
