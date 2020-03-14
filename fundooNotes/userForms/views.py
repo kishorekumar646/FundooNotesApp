@@ -255,6 +255,17 @@ class PinNoteList(GenericAPIView):
         return Response(seri.data, status=status.HTTP_200_OK)
 
 
+@method_decorator(login_required, name="dispatch")
+class TrashNoteList(GenericAPIView):
+
+    queryset = Notes.objects.all()
+
+    def get(self, request):
+        note = Notes.objects.filter(bin=True, user_id=self.request.user.id)
+        seri = DisplayNoteSerializer(note, many=True)
+        return Response(seri.data, status=status.HTTP_200_OK)
+
+
 @method_decorator(login_required(redirect_field_name='/login/'), name="dispatch")
 class BinNoteList(GenericAPIView):
 
