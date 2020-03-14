@@ -233,7 +233,7 @@ class UpdateNoteList(GenericAPIView):
             return Response("Not found", status=status.HTTP_404_NOT_FOUND)
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(login_url='/login/'), name="dispatch")
 class ArchiveNoteList(GenericAPIView):
 
     queryset = Notes.objects.all()
@@ -244,7 +244,7 @@ class ArchiveNoteList(GenericAPIView):
         return Response(seri.data, status=status.HTTP_200_OK)
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(login_url='/login/'), name="dispatch")
 class PinNoteList(GenericAPIView):
 
     queryset = Notes.objects.all()
@@ -255,7 +255,7 @@ class PinNoteList(GenericAPIView):
         return Response(seri.data, status=status.HTTP_200_OK)
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(login_url='/login/'), name="dispatch")
 class TrashNoteList(GenericAPIView):
 
     queryset = Notes.objects.all()
@@ -266,7 +266,7 @@ class TrashNoteList(GenericAPIView):
         return Response(seri.data, status=status.HTTP_200_OK)
 
 
-@method_decorator(login_required, name="dispatch")
+@method_decorator(login_required(login_url='/login/'), name="dispatch")
 class RestoreNoteList(GenericAPIView):
 
     serializer_class = RestoreNoteSerializer
