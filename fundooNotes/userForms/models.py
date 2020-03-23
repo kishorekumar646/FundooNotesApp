@@ -20,3 +20,19 @@ class Notes(models.Model):
 
 class ProfilePic(models.Model):
     imagePic = models.ImageField(upload_to="images")
+
+
+def PeriodicTask_test(sender, instance, **kwargs):
+    print("Working")
+
+def save_reminder(sender, instance, **kwargs):
+
+    if instance.reminders is None:
+        print("Not create reminder")
+
+    else:
+        print("Create reminder", instance.reminders)
+        
+
+pre_save.connect(save_reminder, sender=Notes)
+pre_save.connect(PeriodicTask_test, sender=PeriodicTask)
